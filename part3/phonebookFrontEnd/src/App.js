@@ -5,6 +5,7 @@ import Persons from "./Persons";
 import apiService from "./apiService";
 import Notification from "./Notification";
 import "./App.css";
+import { set } from "mongoose";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -47,14 +48,24 @@ const App = () => {
         name: newName,
         number: newNumber,
       };
-      apiService.create(personObject).then((createdNote) => {
-        setPersons([...persons, createdNote]);
-      });
-      setMessage({ type: "Message", content: `Added ${newName}` });
-      setVisible(true);
-      setTimeout(() => {
-        setVisible(false);
-      }, 5000);
+      apiService
+        .create(personObject)
+        .then((createdNote) => {
+          setPersons([...persons, createdNote]);
+          setMessage({ type: "Message", content: `Added ${newName}` });
+          setVisible(true);
+          setTimeout(() => {
+            setVisible(false);
+          }, 5000);
+        })
+        .catch((error) => {
+          console.log(error.response);
+          setMessage({ type: "error", content: error.response.data.error });
+          setVisible(true);
+          setTimeout(() => {
+            setVisible(false);
+          }, 5000);
+        });
     } else {
       if (
         window.confirm(
@@ -84,9 +95,9 @@ const App = () => {
           .catch((error) => {
             setMessage({
               type: "error",
-              content: `Error the person ${newName} was already deleted from the server`,
+              content: error.response.data.error,
             });
-            setPersons(persons.filter((person) => person.id !== personId));
+            //setPersons(persons.filter((person) => person.id !== personId));
             setVisible(true);
             setTimeout(() => {
               setVisible(false);
