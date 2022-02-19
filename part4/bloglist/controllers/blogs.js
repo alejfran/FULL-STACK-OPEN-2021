@@ -1,19 +1,50 @@
 const blogRouter = require("express").Router();
-
 const Blog = require("../models/blog");
 
-blogRouter.get("/", (request, response) => {
-  Blog.find({}).then((blogs) => {
-    response.json(blogs);
-  });
+blogRouter.get("/", async (request, response) => {
+  const blogs = await Blog.find({});
+  response.json(blogs);
 });
 
-blogRouter.post("/", (request, response) => {
-  const blog = new Blog(request.body);
-
-  blog.save().then((result) => {
+blogRouter.post("/", async (request, response) => {
+  if (!request.body.title || !request.body.url) {
+    response.status(400).send("Bad Request");
+  } else {
+    const blog = new Blog(request.body);
+    const result = await blog.save();
     response.status(201).json(result);
-  });
+  }
+});
+
+blogRouter.delete("/:id", async (request, response, next) => {
+  try {
+    await Blog.findByIdAndRemove(request.params.id);
+    response.status(204).end();
+  } catch (exception) {
+    next(exception);
+  }
+});
+
+blogRouter.put("/:id", async (request, response, next) => {
+  const body = request.body;
+
+  const newData = {
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes || 0,
+  };
+
+  try {
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      request.params.id,
+      newData,
+      { new: true }
+    );
+    response.json(updatedBlog);
+  } catch (exception) {
+    next(exception);
+  }
 });
 
 module.exports = blogRouter;

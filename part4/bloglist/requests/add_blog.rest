@@ -1,9 +1,4 @@
-POST http://localhost:3001/api/blogs/
+PUT http://localhost:3001/api/blogs/
 Content-Type: application/json
 
-{
-    "title" : "Third Blog",
-    "author" : "me",
-    "url" : "www.url.com",
-    "likes": 44
-}
+{"_id":{"$oid":"620149d7142d93e45b4403c9"},"title":"Third Blog","author":"me","url":"www.url.com","likes":{"$numberInt":"44"},"__v":{"$numberInt":"0"}}
