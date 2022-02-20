@@ -1,4 +1,11 @@
-PUT http://localhost:3001/api/blogs/
+POST http://localhost:3001/api/blogs
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFsZWpmcmFuIiwiaWQiOiI2MjEyNDgyNzJjNWI0NDQ2ZTMzZGM0MzAiLCJpYXQiOjE2NDUzNzkzNjB9.LsiUCXYAXl8cKGmwhFdICvJHb5utPNlOK2ouxyrheMg
 
-{"_id":{"$oid":"620149d7142d93e45b4403c9"},"title":"Third Blog","author":"me","url":"www.url.com","likes":{"$numberInt":"44"},"__v":{"$numberInt":"0"}}
+{
+    "title" : "auth middleware 2 test",
+    "author" : "me",
+    "url" : "www.url.com",
+    "likes": 44,
+    "userId": "621227b9cf1c62ab20171749"
+}

@@ -14,6 +14,7 @@ const initialBlogs = [
     url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
     likes: 5,
     __v: 0,
+    user: "6212890fe821a69dbc8ac95c",
   },
   {
     _id: "5a422b891b54a676234d17fa",
@@ -61,6 +62,13 @@ test("the unique identifier property of the blog is the id", async () => {
 });
 
 test("a valid blog can be added", async () => {
+  const loginInfo = {
+    username: "mluukkai",
+    password: "salainen",
+  };
+
+  const logIn = await api.post("/api/login").send(loginInfo);
+
   const newBlog = {
     id: "5a422b891b54a676234d13fa",
     title: "test",
@@ -72,6 +80,7 @@ test("a valid blog can be added", async () => {
   await api
     .post("/api/blogs")
     .send(newBlog)
+    .set("Authorization", `bearer ${logIn.body.token}`)
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
@@ -84,8 +93,16 @@ test("a valid blog can be added", async () => {
 });
 
 test("likes defaults to 0 likes", async () => {
+  const loginInfo = {
+    username: "mluukkai",
+    password: "salainen",
+  };
+
+  const logIn = await api.post("/api/login").send(loginInfo);
+
   const newBlog = {
     id: "5a422b891b54a676234d13fa",
+    user: "6212890fe821a69dbc8ac95c",
     title: "testLikes",
     author: "Robert",
     url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.xml",
@@ -94,6 +111,7 @@ test("likes defaults to 0 likes", async () => {
   await api
     .post("/api/blogs")
     .send(newBlog)
+    .set("Authorization", `bearer ${logIn.body.token}`)
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
@@ -118,10 +136,20 @@ test("blog created without title and url", async () => {
 });
 
 test("succeds with status code 204 if id is valid", async () => {
+  const loginInfo = {
+    username: "mluukkai",
+    password: "salainen",
+  };
+
+  const logIn = await api.post("/api/login").send(loginInfo);
+
   const intialDBBlogs = await helper.BlogsInDb();
   const blogToDelete = intialDBBlogs[0];
 
-  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .set("Authorization", `bearer ${logIn.body.token}`)
+    .expect(204);
 
   const updatedDBBlogs = await helper.BlogsInDb();
 
